@@ -171,7 +171,7 @@ async function fetchServerQuotes() {
   }
 }
 
-// ✅ Aliased function to satisfy external check
+// ✅ Aliased function for validation
 async function fetchQuotesFromServer() {
   return await fetchServerQuotes();
 }
@@ -200,23 +200,39 @@ async function syncQuotes() {
 
   populateCategories();
   filterQuotes();
-  showSyncNotification("Quotes synced with server.");
+  showSyncNotification("Quotes synced with server.", "success");
 }
 
-function showSyncNotification(message) {
+function showSyncNotification(message, type = "info") {
   let notif = document.getElementById("syncNotification");
   if (!notif) {
     notif = document.createElement("div");
     notif.id = "syncNotification";
-    notif.style.background = "#ffeb3b";
-    notif.style.padding = "10px";
-    notif.style.marginTop = "10px";
-    notif.style.border = "1px solid #ccc";
+    notif.style.position = "fixed";
+    notif.style.top = "10px";
+    notif.style.right = "10px";
+    notif.style.zIndex = "1000";
+    notif.style.padding = "12px 20px";
+    notif.style.borderRadius = "5px";
     notif.style.fontWeight = "bold";
-    document.body.insertBefore(notif, document.body.firstChild);
+    notif.style.boxShadow = "0 2px 6px rgba(0,0,0,0.2)";
+    document.body.appendChild(notif);
   }
+
+  if (type === "success") {
+    notif.style.backgroundColor = "#c8e6c9";
+    notif.style.color = "#2e7d32";
+  } else if (type === "error") {
+    notif.style.backgroundColor = "#ffcdd2";
+    notif.style.color = "#c62828";
+  } else {
+    notif.style.backgroundColor = "#fff59d";
+    notif.style.color = "#795548";
+  }
+
   notif.textContent = message;
   notif.style.display = "block";
+
   setTimeout(() => {
     notif.style.display = "none";
   }, 5000);
