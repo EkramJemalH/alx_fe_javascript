@@ -39,6 +39,8 @@ function populateCategories() {
     option.textContent = cat;
     categorySelect.appendChild(option);
   });
+  const savedCategory = localStorage.getItem("selectedCategory") || "all";
+  categorySelect.value = savedCategory;
 }
 
 function showRandomQuote() {
@@ -79,41 +81,7 @@ function addQuote() {
   document.getElementById("newQuoteCategory").value = "";
 
   alert("Quote added successfully!");
-}
-
-function createAddQuoteForm() {
-  const formContainer = document.createElement("div");
-  formContainer.style.marginTop = "20px";
-
-  const heading = document.createElement("h3");
-  heading.textContent = "Add a New Quote";
-
-  const inputQuote = document.createElement("input");
-  inputQuote.id = "newQuoteText";
-  inputQuote.type = "text";
-  inputQuote.placeholder = "Enter a new quote";
-  inputQuote.style.margin = "5px";
-  inputQuote.style.padding = "8px";
-
-  const inputCategory = document.createElement("input");
-  inputCategory.id = "newQuoteCategory";
-  inputCategory.type = "text";
-  inputCategory.placeholder = "Enter quote category";
-  inputCategory.style.margin = "5px";
-  inputCategory.style.padding = "8px";
-
-  const addBtn = document.createElement("button");
-  addBtn.textContent = "Add Quote";
-  addBtn.onclick = addQuote;
-  addBtn.style.margin = "5px";
-  addBtn.style.padding = "8px";
-
-  formContainer.appendChild(heading);
-  formContainer.appendChild(inputQuote);
-  formContainer.appendChild(inputCategory);
-  formContainer.appendChild(addBtn);
-
-  document.body.appendChild(formContainer);
+  showRandomQuote();
 }
 
 function exportToJsonFile() {
@@ -155,8 +123,12 @@ function loadLastViewedQuote() {
   }
 }
 
+categorySelect.addEventListener("change", () => {
+  localStorage.setItem("selectedCategory", categorySelect.value);
+  showRandomQuote();
+});
+
 loadQuotes();
 populateCategories();
-createAddQuoteForm();
 loadLastViewedQuote();
 newQuoteBtn.addEventListener("click", showRandomQuote);
