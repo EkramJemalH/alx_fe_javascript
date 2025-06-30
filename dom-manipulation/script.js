@@ -41,7 +41,7 @@ function showRandomQuote() {
   const quote = filteredQuotes[randomIndex];
   quoteDisplay.textContent = `"${quote.text}" — ${quote.category}`;
 }
-// ✅ Add new quote
+
 function addQuote() {
   const text = document.getElementById("newQuoteText").value.trim();
   const category = document
@@ -63,5 +63,42 @@ function addQuote() {
   alert("Quote added successfully!");
 }
 
+function createAddQuoteForm() {
+  const formContainer = document.createElement("div");
+  formContainer.style.marginTop = "20px";
+
+  const heading = document.createElement("h3");
+  heading.textContent = "Add a New Quote";
+
+  const inputQuote = document.createElement("input");
+  inputQuote.id = "newQuoteText";
+  inputQuote.type = "text";
+  inputQuote.placeholder = "Enter a new quote";
+  inputQuote.style.margin = "5px";
+  inputQuote.style.padding = "8px";
+
+  const inputCategory = document.createElement("input");
+  inputCategory.id = "newQuoteCategory";
+  inputCategory.type = "text";
+  inputCategory.placeholder = "Enter quote category";
+  inputCategory.style.margin = "5px";
+  inputCategory.style.padding = "8px";
+
+  const addBtn = document.createElement("button");
+  addBtn.textContent = "Add Quote";
+  addBtn.onclick = addQuote;
+  addBtn.style.margin = "5px";
+  addBtn.style.padding = "8px";
+
+  formContainer.appendChild(heading);
+  formContainer.appendChild(inputQuote);
+  formContainer.appendChild(inputCategory);
+  formContainer.appendChild(addBtn);
+
+  document.body.appendChild(formContainer);
+}
+
+// ✅ Initialize everything once
 populateCategories();
 newQuoteBtn.addEventListener("click", showRandomQuote);
+createAddQuoteForm();
