@@ -121,13 +121,30 @@ function loadLastViewedQuote() {
     quoteDisplay.textContent = `"${quote.text}" — ${quote.category}`;
   }
 }
+function filterQuotes() {
+  const selectedCategory = categoryFilter.value;
+  const filteredQuotes =
+    selectedCategory === "all"
+      ? quotes
+      : quotes.filter((q) => q.category === selectedCategory);
+
+  if (filteredQuotes.length === 0) {
+    quoteDisplay.textContent = "No quotes found in this category.";
+    return;
+  }
+
+  // Just show the first quote in filtered list (or any logic you want)
+  const quote = filteredQuotes[0];
+  quoteDisplay.textContent = `"${quote.text}" — ${quote.category}`;
+}
 
 categoryFilter.addEventListener("change", () => {
   localStorage.setItem("selectedCategory", categoryFilter.value);
-  showRandomQuote();
+  filterQuotes();
 });
 
 loadQuotes();
 populateCategories();
-loadLastViewedQuote();
+filterQuotes();
+
 newQuoteBtn.addEventListener("click", showRandomQuote);
