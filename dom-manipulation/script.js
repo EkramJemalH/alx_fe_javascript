@@ -200,7 +200,7 @@ async function syncQuotes() {
 
   populateCategories();
   filterQuotes();
-  showSyncNotification("Quotes synced with server.", "success");
+  showSyncNotification("Quotes synced with server!", "success");
 }
 
 function showSyncNotification(message, type = "info") {
