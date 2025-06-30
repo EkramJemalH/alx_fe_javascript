@@ -4,7 +4,7 @@ const quoteDisplay = document.getElementById("quoteDisplay");
 const categoryFilter = document.getElementById("categoryFilter");
 const newQuoteBtn = document.getElementById("newQuote");
 
-const SERVER_URL = "https://jsonplaceholder.typicode.com/posts"; // Mock API for simulation
+const SERVER_URL = "https://jsonplaceholder.typicode.com/posts"; // Mock API
 
 function loadQuotes() {
   const stored = localStorage.getItem("quotes");
@@ -86,7 +86,7 @@ function addQuote() {
   alert("Quote added successfully!");
   showRandomQuote();
 
-  postNewQuoteToServer(newQuote); // Async post to server
+  postNewQuoteToServer(newQuote);
 }
 
 function exportToJsonFile() {
@@ -150,14 +150,14 @@ categoryFilter.addEventListener("change", () => {
   filterQuotes();
 });
 
-// Simulate fetching quotes from server
+// --- Server Sync Logic ---
+
 async function fetchServerQuotes() {
   try {
     const response = await fetch(SERVER_URL);
     if (!response.ok) throw new Error("Failed to fetch from server");
     const data = await response.json();
 
-    // Map posts to quote format (simulate server data)
     const serverQuotes = data.slice(0, 10).map((item) => ({
       text: item.title,
       category: "server",
@@ -171,7 +171,6 @@ async function fetchServerQuotes() {
   }
 }
 
-// Post new quote to server (simulate)
 async function postNewQuoteToServer(quote) {
   try {
     const response = await fetch(SERVER_URL, {
@@ -187,12 +186,11 @@ async function postNewQuoteToServer(quote) {
   }
 }
 
-// Sync local data with server data (server data wins)
-async function syncWithServer() {
+async function fetchQuotesFromServer() {
   const serverQuotes = await fetchServerQuotes();
-  if (serverQuotes.length === 0) return; // No server data or error
+  if (serverQuotes.length === 0) return;
 
-  // Replace local quotes with server quotes for conflict resolution
+  // Conflict resolution: server wins
   localStorage.setItem("quotes", JSON.stringify(serverQuotes));
   quotes = serverQuotes;
 
@@ -221,9 +219,14 @@ function showSyncNotification(message) {
   }, 5000);
 }
 
-// Periodic sync every 30 seconds
+// Sync every 30 seconds
+function syncWithServer() {
+  fetchQuotesFromServer();
+}
+
 setInterval(syncWithServer, 30000);
 
+// --- Initialization ---
 loadQuotes();
 populateCategories();
 filterQuotes();
