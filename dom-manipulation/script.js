@@ -1,7 +1,7 @@
 let quotes = [];
 
 const quoteDisplay = document.getElementById("quoteDisplay");
-const categorySelect = document.getElementById("categorySelect");
+const categoryFilter = document.getElementById("categoryFilter");
 const newQuoteBtn = document.getElementById("newQuote");
 
 function loadQuotes() {
@@ -32,19 +32,18 @@ function saveQuotes() {
 
 function populateCategories() {
   const categories = [...new Set(quotes.map((q) => q.category))];
-  categorySelect.innerHTML = '<option value="all">All</option>';
+  categoryFilter.innerHTML = '<option value="all">All</option>';
   categories.forEach((cat) => {
     const option = document.createElement("option");
     option.value = cat;
     option.textContent = cat;
-    categorySelect.appendChild(option);
+    categoryFilter.appendChild(option);
   });
   const savedCategory = localStorage.getItem("selectedCategory") || "all";
-  categorySelect.value = savedCategory;
+  categoryFilter.value = savedCategory;
 }
-
 function showRandomQuote() {
-  const selectedCategory = categorySelect.value;
+  const selectedCategory = categoryFilter.value;
   const filteredQuotes =
     selectedCategory === "all"
       ? quotes
@@ -123,8 +122,8 @@ function loadLastViewedQuote() {
   }
 }
 
-categorySelect.addEventListener("change", () => {
-  localStorage.setItem("selectedCategory", categorySelect.value);
+categoryFilter.addEventListener("change", () => {
+  localStorage.setItem("selectedCategory", categoryFilter.value);
   showRandomQuote();
 });
 
