@@ -4,7 +4,7 @@ const quoteDisplay = document.getElementById("quoteDisplay");
 const categoryFilter = document.getElementById("categoryFilter");
 const newQuoteBtn = document.getElementById("newQuote");
 
-const SERVER_URL = "https://jsonplaceholder.typicode.com/posts"; // Mock API
+const SERVER_URL = "https://jsonplaceholder.typicode.com/posts"; // Simulated API
 
 function loadQuotes() {
   const stored = localStorage.getItem("quotes");
@@ -186,18 +186,17 @@ async function postNewQuoteToServer(quote) {
   }
 }
 
-async function fetchQuotesFromServer() {
+// --- NEW: Main Sync Function ---
+async function syncQuotes() {
   const serverQuotes = await fetchServerQuotes();
   if (serverQuotes.length === 0) return;
 
-  // Conflict resolution: server wins
   localStorage.setItem("quotes", JSON.stringify(serverQuotes));
   quotes = serverQuotes;
 
   populateCategories();
   filterQuotes();
-
-  showSyncNotification("Quotes synced with server. Local data updated.");
+  showSyncNotification("Quotes synced with server.");
 }
 
 function showSyncNotification(message) {
@@ -219,17 +218,14 @@ function showSyncNotification(message) {
   }, 5000);
 }
 
-// Sync every 30 seconds
-function syncWithServer() {
-  fetchQuotesFromServer();
-}
+// Periodic Sync every 30 seconds
+setInterval(syncQuotes, 30000);
 
-setInterval(syncWithServer, 30000);
-
-// --- Initialization ---
+// --- Initial Load ---
 loadQuotes();
 populateCategories();
 filterQuotes();
 loadLastViewedQuote();
+syncQuotes(); // Initial sync with server
 
 newQuoteBtn.addEventListener("click", showRandomQuote);
