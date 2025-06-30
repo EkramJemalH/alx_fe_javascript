@@ -4,6 +4,8 @@ const quoteDisplay = document.getElementById("quoteDisplay");
 const categoryFilter = document.getElementById("categoryFilter");
 const newQuoteBtn = document.getElementById("newQuote");
 
+const SERVER_URL = "https://jsonplaceholder.typicode.com/posts"; // Mock API for simulation
+
 function loadQuotes() {
   const stored = localStorage.getItem("quotes");
   if (stored) {
@@ -42,6 +44,7 @@ function populateCategories() {
   const savedCategory = localStorage.getItem("selectedCategory") || "all";
   categoryFilter.value = savedCategory;
 }
+
 function showRandomQuote() {
   const selectedCategory = categoryFilter.value;
   const filteredQuotes =
@@ -72,7 +75,8 @@ function addQuote() {
     return;
   }
 
-  quotes.push({ text, category });
+  const newQuote = { text, category };
+  quotes.push(newQuote);
   saveQuotes();
   populateCategories();
 
@@ -81,6 +85,8 @@ function addQuote() {
 
   alert("Quote added successfully!");
   showRandomQuote();
+
+  postNewQuoteToServer(newQuote); // Async post to server
 }
 
 function exportToJsonFile() {
@@ -121,6 +127,7 @@ function loadLastViewedQuote() {
     quoteDisplay.textContent = `"${quote.text}" — ${quote.category}`;
   }
 }
+
 function filterQuotes() {
   const selectedCategory = categoryFilter.value;
   const filteredQuotes =
@@ -133,9 +140,9 @@ function filterQuotes() {
     return;
   }
 
-  // Just show the first quote in filtered list (or any logic you want)
   const quote = filteredQuotes[0];
   quoteDisplay.textContent = `"${quote.text}" — ${quote.category}`;
+  sessionStorage.setItem("lastQuote", JSON.stringify(quote));
 }
 
 categoryFilter.addEventListener("change", () => {
@@ -143,8 +150,83 @@ categoryFilter.addEventListener("change", () => {
   filterQuotes();
 });
 
+// Simulate fetching quotes from server
+async function fetchServerQuotes() {
+  try {
+    const response = await fetch(SERVER_URL);
+    if (!response.ok) throw new Error("Failed to fetch from server");
+    const data = await response.json();
+
+    // Map posts to quote format (simulate server data)
+    const serverQuotes = data.slice(0, 10).map((item) => ({
+      text: item.title,
+      category: "server",
+      id: item.id,
+    }));
+
+    return serverQuotes;
+  } catch (error) {
+    console.error("Error fetching server quotes:", error);
+    return [];
+  }
+}
+
+// Post new quote to server (simulate)
+async function postNewQuoteToServer(quote) {
+  try {
+    const response = await fetch(SERVER_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(quote),
+    });
+    if (!response.ok) throw new Error("Failed to post quote to server");
+    const result = await response.json();
+    console.log("Quote posted to server:", result);
+  } catch (error) {
+    console.error("Error posting quote:", error);
+  }
+}
+
+// Sync local data with server data (server data wins)
+async function syncWithServer() {
+  const serverQuotes = await fetchServerQuotes();
+  if (serverQuotes.length === 0) return; // No server data or error
+
+  // Replace local quotes with server quotes for conflict resolution
+  localStorage.setItem("quotes", JSON.stringify(serverQuotes));
+  quotes = serverQuotes;
+
+  populateCategories();
+  filterQuotes();
+
+  showSyncNotification("Quotes synced with server. Local data updated.");
+}
+
+function showSyncNotification(message) {
+  let notif = document.getElementById("syncNotification");
+  if (!notif) {
+    notif = document.createElement("div");
+    notif.id = "syncNotification";
+    notif.style.background = "#ffeb3b";
+    notif.style.padding = "10px";
+    notif.style.marginTop = "10px";
+    notif.style.border = "1px solid #ccc";
+    notif.style.fontWeight = "bold";
+    document.body.insertBefore(notif, document.body.firstChild);
+  }
+  notif.textContent = message;
+  notif.style.display = "block";
+  setTimeout(() => {
+    notif.style.display = "none";
+  }, 5000);
+}
+
+// Periodic sync every 30 seconds
+setInterval(syncWithServer, 30000);
+
 loadQuotes();
 populateCategories();
 filterQuotes();
+loadLastViewedQuote();
 
 newQuoteBtn.addEventListener("click", showRandomQuote);
