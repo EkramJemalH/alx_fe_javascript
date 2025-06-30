@@ -41,7 +41,7 @@ function showRandomQuote() {
   const quote = filteredQuotes[randomIndex];
   quoteDisplay.textContent = `"${quote.text}" — ${quote.category}`;
 }
-
+// ✅ Add new quote
 function addQuote() {
   const text = document.getElementById("newQuoteText").value.trim();
   const category = document
